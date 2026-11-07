@@ -24,6 +24,14 @@ struct {
     __uint(max_entries, 1 << 24); // 16 MB ring buffer
 } events SEC(".maps");
 
+// BPF Map to record dropped event count under heavy kernel pressure
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 1);
+    __type(key, __u32);
+    __type(value, __u64);
+} drop_counter SEC(".maps");
+
 // Tracepoint: syscalls/sys_enter_execve
 SEC("tracepoint/syscalls/sys_enter_execve")
 int trace_sys_enter_execve(struct trace_event_raw_sys_enter *ctx) {
@@ -33,6 +41,12 @@ int trace_sys_enter_execve(struct trace_event_raw_sys_enter *ctx) {
 
     event = bpf_ringbuf_reserve(&events, sizeof(*event), 0);
     if (!event) {
+        // Track drops deterministically for security monitoring
+        __u32 key = 0;
+        __u64 *val = bpf_map_lookup_elem(&drop_counter, &key);
+        if (val) {
+            __sync_fetch_and_add(val, 1);
+        }
         return 0;
     }
 
