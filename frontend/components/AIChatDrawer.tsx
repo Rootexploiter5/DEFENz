@@ -34,13 +34,15 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ alert, backendUrl = 
     setIsLoading(true);
 
     try {
-      // Query local Ollama via backend API endpoint
-      const response = await fetch(`${backendUrl}/api/telemetry/lineage/${alert.trigger_pid}`);
+      // Query local Ollama via backend AI interrogation endpoint
+      const response = await fetch(`${backendUrl}/api/ai/interrogate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pid: alert.trigger_pid, user_query: userText }),
+      });
       const data = await response.json();
       
-      const aiReply = `Forensic Context for PID ${alert.trigger_pid}: Analyzed ${data.events?.length || 0} recent tracepoints. Anomaly score remains at ${(alert.anomaly_score * 100).toFixed(1)}%. Recommended action: ${alert.recommended_action}.`;
-      
-      setMessages((prev) => [...prev, { sender: "ai", text: aiReply }]);
+      setMessages((prev) => [...prev, { sender: "ai", text: data.reply || "No response received from AI engine." }]);
     } catch {
       setMessages((prev) => [
         ...prev,
