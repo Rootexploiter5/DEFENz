@@ -104,3 +104,4 @@ export function useTelemetrySocket(backendWsUrl: string = "ws://localhost:8000/w
 
   return { events, alerts, isConnected, sendMessage };
 }
+

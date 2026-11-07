@@ -105,3 +105,4 @@ export const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ alert, backendUrl = 
     </div>
   );
 };
+

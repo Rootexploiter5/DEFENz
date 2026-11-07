@@ -102,3 +102,4 @@ export const ThreatAlertCard: React.FC<ThreatAlertCardProps> = ({ alert }) => {
     </div>
   );
 };
+

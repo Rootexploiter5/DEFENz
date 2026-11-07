@@ -80,3 +80,4 @@ export const ProcessGraph: React.FC<ProcessGraphProps> = ({ tree, triggerPid }) 
     </div>
   );
 };
+
