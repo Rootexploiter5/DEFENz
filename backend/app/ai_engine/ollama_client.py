@@ -59,3 +59,4 @@ class OllamaClient:
 
 # Singleton client instance
 ollama_client = OllamaClient()
+

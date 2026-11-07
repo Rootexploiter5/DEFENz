@@ -40,3 +40,4 @@ Destination Port: {event_data.get('dest_port', 'N/A')}
 
     prompt += "\nEvaluate this execution trace now. Provide your strict JSON forensic verdict:"
     return prompt
+

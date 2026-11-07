@@ -42,3 +42,4 @@ def ingest_cve_and_mitre_file(file_path: str):
 
     vector_store.add_intelligence_documents(documents=documents, metadatas=metadatas, ids=ids)
     logger.info("Successfully ingested %d intelligence items from %s", len(ids), file_path)
+

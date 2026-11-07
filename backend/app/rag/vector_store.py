@@ -49,3 +49,4 @@ class LocalVectorStore:
         logger.info("Added %d threat intelligence documents to local vector store", len(documents))
 
 vector_store = LocalVectorStore()
+

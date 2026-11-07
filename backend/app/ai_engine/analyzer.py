@@ -118,3 +118,4 @@ async def analyze_anomaly(event: BaseTelemetryEvent, anomaly_score: float) -> Op
         execute_remediation_action("KILL_PROCESS", event.pid)
 
     return threat_alert
+
