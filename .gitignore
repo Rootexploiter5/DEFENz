@@ -1,0 +1,35 @@
+# Go
+agent/bin/
+agent/*.o
+agent/bpf/*.o
+agent/pkg/collector/bpf_*
+
+# Python & ML
+__pycache__/
+*.py[cod]
+*$py.class
+backend/.venv/
+backend/env/
+backend/venv/
+*.sqlite
+*.sqlite3
+*.db
+backend/chroma_db/
+backend/faiss_index/
+.env
+
+# Node & Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+.npm
+.yarn/
+*.log
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
