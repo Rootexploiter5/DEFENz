@@ -20,9 +20,14 @@ type Client struct {
 	stopChan  chan struct{}
 }
 
-// NewClient initializes a new transmitter client.
-func NewClient(serverHost string, bufferSize int) *Client {
-	u := url.URL{Scheme: "ws", Host: serverHost, Path: "/ws/agent"}
+// NewClient initializes a new transmitter client with authentication.
+func NewClient(serverHost string, bufferSize int, authToken string) *Client {
+	u := url.URL{
+		Scheme:   "ws",
+		Host:     serverHost,
+		Path:     "/ws/agent",
+		RawQuery: fmt.Sprintf("token=%s", url.QueryEscape(authToken)),
+	}
 	return &Client{
 		serverURL: u.String(),
 		sendChan:  make(chan []byte, bufferSize),

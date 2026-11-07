@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"  # Bound to localhost for security
     PORT: int = 8000
     
+    # Internal IPC Authentication Token (Agent -> Backend)
+    AGENT_AUTH_TOKEN: str = "defenx-internal-local-token"
+    
     # Storage
     DATABASE_PATH: str = "telemetry.db"
     

@@ -1,9 +1,10 @@
 import json
 import logging
 from typing import Set
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query, status
 from backend.app.models.schemas import BaseTelemetryEvent
 from backend.app.core.storage import insert_event
+from backend.app.core.config import settings
 from backend.app.ml_filter.anomaly_scorer import scorer
 
 logger = logging.getLogger("defenx.ws")
@@ -35,13 +36,21 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 @router.websocket("/ws/agent")
-async def websocket_agent_endpoint(websocket: WebSocket):
+async def websocket_agent_endpoint(
+    websocket: WebSocket,
+    token: str = Query(default="")
+):
     """
     Receives raw high-frequency telemetry events from the Go/eBPF agent.
-    Performs ML scoring and persists events to the time-series store.
+    Enforces internal token authentication to prevent unauthorized local telemetry injection.
     """
+    if token != settings.AGENT_AUTH_TOKEN:
+        logger.warning("[Security] Unauthorized agent connection rejected from %s", websocket.client)
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
+
     await websocket.accept()
-    logger.info("Go eBPF Agent successfully connected to /ws/agent")
+    logger.info("Go eBPF Agent successfully authenticated and connected to /ws/agent")
     try:
         while True:
             data = await websocket.receive_text()

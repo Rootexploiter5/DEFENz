@@ -16,6 +16,7 @@ import (
 
 func main() {
 	backendAddr := flag.String("backend", "localhost:8000", "FastAPI backend address host:port")
+	authToken := flag.String("token", "defenx-internal-local-token", "Internal IPC auth token for backend WebSocket")
 	flag.Parse()
 
 	log.Println("==================================================")
@@ -34,8 +35,8 @@ func main() {
 		cancel()
 	}()
 
-	// 1. Initialize Transmitter to Python Backend
-	tx := transmitter.NewClient(*backendAddr, 10000)
+	// 1. Initialize Transmitter to Python Backend with auth token
+	tx := transmitter.NewClient(*backendAddr, 10000, *authToken)
 	if err := tx.Start(ctx); err != nil {
 		log.Printf("[Agent Warning] Backend not reachable at %s: %v. Retrying in background...", *backendAddr, err)
 	}
