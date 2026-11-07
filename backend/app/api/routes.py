@@ -2,20 +2,28 @@ import os
 from fastapi import APIRouter, HTTPException
 from backend.app.core.config import settings
 from backend.app.models.schemas import SystemHealth
-from backend.app.core.storage import get_recent_lineage
+from backend.app.core.storage import get_recent_lineage, get_system_counts
 from backend.app.ml_filter.anomaly_scorer import scorer
 from backend.app.ml_filter.baseline_trainer import train_baseline
 
 router = APIRouter()
 
+# In-memory tracking of real detected anomalies during current session
+detected_anomalies_count = 0
+
+def increment_anomaly_counter():
+    global detected_anomalies_count
+    detected_anomalies_count += 1
+
 @router.get("/health", response_model=SystemHealth)
 async def get_system_health():
-    """Returns the operational status of the EDR backend and ML model."""
+    """Returns the operational status of the EDR backend and ML model with real database counts."""
+    total_events = await get_system_counts()
     return SystemHealth(
         status="ACTIVE",
         observation_mode=settings.OBSERVATION_MODE,
-        events_ingested=0,
-        anomalies_detected=0,
+        events_ingested=total_events,
+        anomalies_detected=detected_anomalies_count,
         model_loaded=scorer.is_ready()
     )
 

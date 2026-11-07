@@ -68,6 +68,9 @@ async def websocket_agent_endpoint(websocket: WebSocket):
 
             # 4. Trigger AI Handoff if anomaly threshold breached
             if is_anomaly:
+                from backend.app.api.routes import increment_anomaly_counter
+                increment_anomaly_counter()
+
                 logger.warning(
                     "Statistical anomaly detected! PID=%d Comm=%s Score=%.3f",
                     event.pid, event.comm, anomaly_score

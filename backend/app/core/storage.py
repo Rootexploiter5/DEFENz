@@ -70,3 +70,12 @@ async def get_recent_lineage(pid: int, limit: int = 50) -> List[dict]:
             rows = await cursor.fetchall()
             return [dict(row) for row in reversed(rows)]
 
+async def get_system_counts() -> tuple[int, int]:
+    """Returns actual counts: (total_events_ingested, total_anomalies_detected)."""
+    async with aiosqlite.connect(settings.DATABASE_PATH) as db:
+        async with db.execute("SELECT COUNT(*) FROM telemetry_events") as cursor:
+            row = await cursor.fetchone()
+            total_events = row[0] if row else 0
+        return total_events
+
+
