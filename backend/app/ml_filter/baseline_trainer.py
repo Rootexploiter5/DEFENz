@@ -75,3 +75,4 @@ def train_baseline(db_path: str = settings.DATABASE_PATH, model_save_path: str =
     joblib.dump(model, model_save_path)
     logger.info("Baseline model successfully trained and saved to %s", model_save_path)
     return model
+

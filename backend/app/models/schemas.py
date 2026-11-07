@@ -49,3 +49,4 @@ class SystemHealth(BaseModel):
     events_ingested: int
     anomalies_detected: int
     model_loaded: bool
+

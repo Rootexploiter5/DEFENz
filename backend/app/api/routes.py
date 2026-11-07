@@ -34,3 +34,4 @@ async def get_process_lineage(pid: int):
     """Retrieves process parent/child execution lineage for the specified PID."""
     lineage = await get_recent_lineage(pid)
     return {"pid": pid, "events": lineage}
+

@@ -71,3 +71,4 @@ class AnomalyScorer:
 
 # Singleton scorer instance
 scorer = AnomalyScorer()
+

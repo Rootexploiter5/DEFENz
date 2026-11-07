@@ -69,3 +69,4 @@ async def get_recent_lineage(pid: int, limit: int = 50) -> List[dict]:
         async with db.execute(query, (pid, pid, limit)) as cursor:
             rows = await cursor.fetchall()
             return [dict(row) for row in reversed(rows)]
+

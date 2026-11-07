@@ -96,3 +96,4 @@ async def websocket_frontend_endpoint(websocket: WebSocket):
             logger.debug("Received frontend client message: %s", msg)
     except WebSocketDisconnect:
         manager.disconnect_frontend(websocket)
+
