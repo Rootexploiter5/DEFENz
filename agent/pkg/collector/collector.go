@@ -56,3 +56,4 @@ func VerifyKernelSupport() error {
 	// In production Linux, validates /sys/kernel/debug/tracing/events availability
 	return fmt.Errorf("eBPF requires Linux kernel 5.4+ with tracepoint support")
 }
+

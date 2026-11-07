@@ -63,3 +63,4 @@ func (e *TelemetryEvent) ToJSONString() (string, error) {
 	}
 	return string(bytes), nil
 }
+

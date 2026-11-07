@@ -19,3 +19,4 @@ clean:
 	rm -rf bin/ $(OUTPUT_DIR)/bpf_*
 
 .PHONY: all generate build clean
+

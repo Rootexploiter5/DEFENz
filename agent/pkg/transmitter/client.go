@@ -95,3 +95,4 @@ func (c *Client) Close() {
 		c.conn.Close()
 	}
 }
+
