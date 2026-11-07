@@ -82,3 +82,4 @@ ai-anomaly-detector/
 - **Python** (3.10+) with `virtualenv`.
 - **Node.js** (18+) & `npm` / `pnpm`.
 - **Ollama** installed and running locally with `llama3:8b` or `qwen2.5-coder`.
+
