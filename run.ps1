@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Single-command launcher for DEFENx: AI-Based Behavioral Anomaly Detection
 .DESCRIPTION
@@ -75,3 +75,4 @@ finally {
     if ($agentProc -and -not $agentProc.HasExited) { Stop-Process -Id $agentProc.Id -Force -ErrorAction SilentlyContinue }
     Write-Host "[✓] Shutdown clean." -ForegroundColor Green
 }
+

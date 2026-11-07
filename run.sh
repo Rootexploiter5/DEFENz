@@ -42,3 +42,4 @@ echo -e "    - Backend Docs:   http://127.0.0.1:8000/docs"
 echo -e "\nPress Ctrl+C to terminate all services."
 
 wait
+
