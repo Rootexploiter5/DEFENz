@@ -48,8 +48,10 @@ int trace_sys_enter_execve(struct trace_event_raw_sys_enter *ctx) {
     const char *filename_ptr = (const char *)ctx->args[0];
     bpf_probe_read_user_str(&event->filename, sizeof(event->filename), filename_ptr);
 
-    // Note: ppid can be resolved in userspace or via task_struct traversal
-    event->ppid = 0; 
+    // Read real parent PID directly from current task_struct
+    struct task_struct *task = (struct task_struct *)bpf_get_current_task();
+    struct task_struct *real_parent = BPF_CORE_READ(task, real_parent);
+    event->ppid = BPF_CORE_READ(real_parent, tgid);
 
     bpf_ringbuf_submit(event, 0);
     return 0;

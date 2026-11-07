@@ -44,9 +44,25 @@ func main() {
 	// 2. Initialize Collector Manager
 	colManager := collector.NewManager()
 
-	// Event handler callback
-	handleKernelEvent := func(eventType string, data []byte) {
-		tx.Send(data)
+	// Event handler callback: maps raw ring buffer bytes to normalized JSON telemetry
+	handleKernelEvent := func(eventType string, rawBytes []byte) {
+		var jsonBytes []byte
+		var err error
+
+		if eventType == "execve" {
+			jsonBytes, err = formatter.FormatProcessEvent(rawBytes)
+		} else if eventType == "connect" {
+			jsonBytes, err = formatter.FormatNetworkEvent(rawBytes)
+		}
+
+		if err != nil {
+			log.Printf("[Agent Error] Failed to format %s event: %v", eventType, err)
+			return
+		}
+
+		if !tx.Send(jsonBytes) {
+			log.Println("[Agent Warning] Transmitter queue full, dropped telemetry frame")
+		}
 	}
 
 	// 3. Start reader loop in background

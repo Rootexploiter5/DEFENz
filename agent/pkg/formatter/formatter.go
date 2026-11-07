@@ -1,10 +1,13 @@
 package formatter
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net"
 	"time"
+
+	"ai-anomaly-detector/agent/pkg/collector"
 )
 
 // TelemetryEvent represents a standardized security telemetry event.
@@ -23,44 +26,50 @@ type TelemetryEvent struct {
 	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
-// FormatExecEvent converts raw process event data to JSON bytes.
-func FormatExecEvent(pid, ppid, uid uint32, comm, path string) ([]byte, error) {
+// FormatProcessEvent converts raw kernel bytes from process_monitor.c to JSON.
+func FormatProcessEvent(raw []byte) ([]byte, error) {
+	record, err := collector.ParseProcessRecord(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	comm := string(bytes.TrimRight(record.Comm[:], "\x00"))
+	path := string(bytes.TrimRight(record.Filename[:], "\x00"))
+
 	event := TelemetryEvent{
 		Timestamp: time.Now().UTC().Format(time.RFC3339Nano),
 		EventType: "execve",
-		PID:       pid,
-		PPID:      ppid,
-		UID:       uid,
+		PID:       record.PID,
+		PPID:      record.PPID,
+		UID:       record.UID,
 		Comm:      comm,
 		Path:      path,
 	}
 	return json.Marshal(event)
 }
 
-// FormatConnectEvent converts raw socket connection data to JSON bytes.
-func FormatConnectEvent(pid, uid uint32, comm string, daddr uint32, dport uint16) ([]byte, error) {
-	// Convert IPv4 binary to human-readable string
+// FormatNetworkEvent converts raw kernel bytes from network_monitor.c to JSON.
+func FormatNetworkEvent(raw []byte) ([]byte, error) {
+	record, err := collector.ParseNetworkRecord(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	comm := string(bytes.TrimRight(record.Comm[:], "\x00"))
+	daddr := record.DAddrV4
 	ip := net.IPv4(byte(daddr), byte(daddr>>8), byte(daddr>>16), byte(daddr>>24)).String()
 
 	event := TelemetryEvent{
 		Timestamp: time.Now().UTC().Format(time.RFC3339Nano),
 		EventType: "connect",
-		PID:       pid,
-		UID:       uid,
+		PID:       record.PID,
+		UID:       record.UID,
 		Comm:      comm,
 		DestIP:    ip,
-		DestPort:  dport,
+		DestPort:  record.DPort,
 		Protocol:  "TCP",
 	}
 	return json.Marshal(event)
 }
 
-// ToJSONString helper to format any TelemetryEvent to string
-func (e *TelemetryEvent) ToJSONString() (string, error) {
-	bytes, err := json.Marshal(e)
-	if err != nil {
-		return "", fmt.Errorf("failed to marshal telemetry event: %w", err)
-	}
-	return string(bytes), nil
-}
 
