@@ -43,13 +43,39 @@ def format_process_lineage_to_tree(events: list) -> tuple[str, ProcessTree, int]
     tree_obj = ProcessTree(root_pid=root_pid, nodes=nodes, tree_text=tree_text)
     return tree_text, tree_obj, root_pid
 
-def execute_remediation_action(action: str, pid: int):
+# Critical protected processes and PIDs that must NEVER be terminated automatically
+PROTECTED_COMM_SET = {
+    "systemd", "init", "kthreadd", "sshd", "dockerd", "containerd",
+    "defenx-agent", "python", "python3", "uvicorn", "go", "explorer.exe",
+    "csrss.exe", "wininit.exe", "services.exe", "lsass.exe", "svchost.exe"
+}
+
+def execute_remediation_action(action: str, pid: int, comm: str):
     """
-    Executes automated local endpoint response if recommended by LLM verdict.
+    Safely executes automated local endpoint response with defensive guardrails:
+    1. Rejects PIDs <= 100 to protect kernel threads and init systems.
+    2. Enforces strict protected process blacklist (e.g. init, sshd, self-agent).
+    3. Prevents terminating own process or parent process tree.
     """
-    if action == "KILL_PROCESS" and pid > 1:
+    if action == "KILL_PROCESS":
+        # Guardrail 1: Protected low PIDs
+        if pid <= 100:
+            logger.warning("[Mitigation Blocked] Refusing to kill critical low PID %d", pid)
+            return
+
+        # Guardrail 2: Self-termination protection
+        current_pid = os.getpid()
+        if pid == current_pid:
+            logger.warning("[Mitigation Blocked] Refusing self-termination of backend PID %d", pid)
+            return
+
+        # Guardrail 3: Protected system daemon names
+        if comm.lower() in PROTECTED_COMM_SET:
+            logger.warning("[Mitigation Blocked] Refusing to kill protected system daemon comm='%s' (PID %d)", comm, pid)
+            return
+
         try:
-            logger.warning("[Mitigation] Sending SIGKILL to anomalous PID %d", pid)
+            logger.warning("[Mitigation] Sending SIGKILL to anomalous PID %d (comm=%s)", pid, comm)
             os.kill(pid, signal.SIGKILL)
             logger.info("[Mitigation] Successfully terminated PID %d", pid)
         except ProcessLookupError:
@@ -113,9 +139,9 @@ async def analyze_anomaly(event: BaseTelemetryEvent, anomaly_score: float) -> Op
         dest_port=event.dest_port
     )
 
-    # 5. Automated response action if High/Critical threat
-    if threat_level in ["High", "Critical"] and recommended_action == "KILL_PROCESS":
-        execute_remediation_action("KILL_PROCESS", event.pid)
+    # 5. Automated response action if High/Critical threat with high confidence
+    if threat_level in ["High", "Critical"] and recommended_action == "KILL_PROCESS" and threat_alert.confidence >= 0.85:
+        execute_remediation_action("KILL_PROCESS", event.pid, event.comm)
 
     return threat_alert
 

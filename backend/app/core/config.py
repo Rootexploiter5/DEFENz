@@ -4,7 +4,7 @@ from typing import Optional
 class Settings(BaseSettings):
     PROJECT_NAME: str = "DEFENx Behavioral Anomaly Detection"
     VERSION: str = "1.0.0"
-    HOST: str = "0.0.0.0"
+    HOST: str = "127.0.0.1"  # Bound to localhost for security
     PORT: int = 8000
     
     # Storage
