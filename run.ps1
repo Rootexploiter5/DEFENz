@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 $rootDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 if (-not $rootDir) { $rootDir = (Get-Location).Path }
 
@@ -40,14 +40,22 @@ if (-not (Test-Path $pythonExe)) {
         -WorkingDirectory $rootDir `
         -PassThru
 
-    # 3. Check Go Agent (if compiled)
+    # 3. Check Endpoint Agent (Windows native or Go binary)
     $agentProc = $null
+    $windowsAgentPy = Join-Path $rootDir "agent\windows_agent.py"
     $agentBinary = Join-Path $rootDir "agent\bin\defenx-agent.exe"
+
     if (Test-Path $agentBinary) {
-        Write-Host "[*] Starting DEFENx Telemetry Agent..." -ForegroundColor Cyan
+        Write-Host "[*] Starting DEFENx Go Telemetry Agent..." -ForegroundColor Cyan
         $agentProc = Start-Process -FilePath $agentBinary `
             -ArgumentList "--backend=localhost:8000" `
             -WorkingDirectory (Join-Path $rootDir "agent") `
+            -PassThru
+    } elseif (Test-Path $windowsAgentPy) {
+        Write-Host "[*] Starting DEFENx Native Windows Telemetry Agent..." -ForegroundColor Cyan
+        $agentProc = Start-Process -FilePath $pythonExe `
+            -ArgumentList $windowsAgentPy `
+            -WorkingDirectory $rootDir `
             -PassThru
     }
 
