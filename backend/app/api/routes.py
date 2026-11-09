@@ -2,7 +2,7 @@ import os
 from fastapi import APIRouter, HTTPException
 from backend.app.core.config import settings
 from backend.app.models.schemas import SystemHealth
-from backend.app.core.storage import get_recent_lineage, get_system_counts
+from backend.app.core.storage import get_recent_lineage, get_system_counts, get_recent_events
 from backend.app.ml_filter.anomaly_scorer import scorer
 from backend.app.ml_filter.baseline_trainer import train_baseline
 
@@ -84,6 +84,12 @@ async def trigger_baseline_training():
         return {"status": "SUCCESS", "message": "Baseline model trained successfully."}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/telemetry/recent")
+async def get_latest_telemetry(limit: int = 50):
+    """Returns recent recorded kernel events to immediately populate UI on refresh."""
+    events = await get_recent_events(limit=limit)
+    return {"events": events}
 
 @router.get("/telemetry/lineage/{pid}")
 async def get_process_lineage(pid: int):

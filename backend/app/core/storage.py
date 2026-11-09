@@ -55,6 +55,20 @@ async def insert_event(event: BaseTelemetryEvent):
         ))
         await db.commit()
 
+async def get_recent_events(limit: int = 50) -> List[dict]:
+    """Retrieves the latest telemetry events from SQLite to bootstrap UI upon connection."""
+    query = """
+    SELECT timestamp, event_type, pid, ppid, uid, comm, path, dest_ip, dest_port, protocol
+    FROM telemetry_events
+    ORDER BY id DESC
+    LIMIT ?
+    """
+    async with aiosqlite.connect(settings.DATABASE_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(query, (limit,)) as cursor:
+            rows = await cursor.fetchall()
+            return [dict(row) for row in rows]
+
 async def get_recent_lineage(pid: int, limit: int = 50) -> List[dict]:
     """Queries telemetry for the target PID and its ancestors/children within recent history."""
     query = """

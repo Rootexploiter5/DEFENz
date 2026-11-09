@@ -44,11 +44,32 @@ export interface ThreatAlert {
   dest_port?: number;
 }
 
-export function useTelemetrySocket(backendWsUrl: string = "ws://localhost:8000/ws/frontend") {
+export function useTelemetrySocket(
+  backendWsUrl: string = "ws://localhost:8000/ws/frontend",
+  backendHttpUrl: string = "http://localhost:8000"
+) {
   const [events, setEvents] = useState<TelemetryEvent[]>([]);
   const [alerts, setAlerts] = useState<ThreatAlert[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const socketRef = useRef<WebSocket | null>(null);
+
+  // Initial load: Fetch stored events from SQLite immediately upon page render
+  useEffect(() => {
+    const fetchInitialTelemetry = async () => {
+      try {
+        const res = await fetch(`${backendHttpUrl}/api/telemetry/recent?limit=50`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.events && data.events.length > 0) {
+            setEvents(data.events);
+          }
+        }
+      } catch (e) {
+        console.debug("Could not pre-fetch recent telemetry:", e);
+      }
+    };
+    fetchInitialTelemetry();
+  }, [backendHttpUrl]);
 
   const sendMessage = useCallback((msg: string) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
