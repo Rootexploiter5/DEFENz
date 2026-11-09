@@ -89,3 +89,4 @@ def run_nvd_sync():
 
 if __name__ == "__main__":
     run_nvd_sync()
+

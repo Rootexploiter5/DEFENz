@@ -146,3 +146,4 @@ if __name__ == "__main__":
         asyncio.run(run_windows_agent())
     except KeyboardInterrupt:
         logger.info("DEFENx Windows Agent stopped by user.")
+
