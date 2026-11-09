@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #07090e;
-  --foreground: #f1f5f9;
+  --background: #04060d;
+  --foreground: #f8fafc;
 }
 
 body {
@@ -12,45 +12,71 @@ body {
   background: var(--background);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 245, 212, 0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(139, 92, 246, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 0% 80%, rgba(217, 70, 239, 0.08), transparent);
+  background-attachment: fixed;
 }
 
-/* Glassmorphism Classes */
+/* Glassmorphism Cyber Panels with Gradient Borders */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: rgba(10, 14, 26, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-glow {
+  background: linear-gradient(135deg, rgba(13, 19, 36, 0.75) 0%, rgba(18, 14, 38, 0.75) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 245, 212, 0.25);
+  box-shadow: 0 12px 40px -10px rgba(0, 245, 212, 0.15),
+              inset 0 1px 1px 0 rgba(0, 245, 212, 0.2);
 }
 
 .glass-panel-danger {
-  background: rgba(244, 63, 94, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(135deg, rgba(26, 10, 18, 0.8) 0%, rgba(38, 12, 20, 0.8) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(244, 63, 94, 0.35);
-  box-shadow: 0 8px 32px 0 rgba(244, 63, 94, 0.15);
+  box-shadow: 0 12px 40px -10px rgba(244, 63, 94, 0.25),
+              inset 0 1px 1px 0 rgba(244, 63, 94, 0.3);
 }
 
-.glass-panel-cyan {
-  background: rgba(0, 245, 212, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 245, 212, 0.3);
+/* Neon Gradient Text */
+.gradient-text-cyan-violet {
+  background: linear-gradient(135deg, #00f5d4 0%, #38bdf8 40%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Custom Scrollbar for Terminal / Live Streams */
+.gradient-text-gold-rose {
+  background: linear-gradient(135deg, #fbbf24 0%, #f43f5e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Neon Accent Borders */
+.border-gradient-cyber {
+  border-image: linear-gradient(to right, #00f5d4, #8b5cf6) 1;
+}
+
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(10, 14, 26, 0.5);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
-  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(0, 245, 212, 0.6), rgba(139, 92, 246, 0.6));
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00f5d4;
+  background: linear-gradient(180deg, #00f5d4, #8b5cf6);
 }
-
